@@ -9,13 +9,17 @@ published with GitHub Pages at <https://ac4ma.github.io/slides/>.
 
 ## Update the slides
 
-The source is the `slides.ipynb` notebook in each exercise template. With the templates
-cloned next to this repository (`../exercise-N-template`) and Jupyter installed:
+The source of each presentation is `exercise-N/slides.ipynb`, with its outputs saved.
+Edit it, then rebuild the HTML and push:
 
 ```sh
 ./build.sh
 git add . && git commit -m "Update slides" && git push
 ```
+
+`build.sh` converts the notebooks as they are, without running them. The cells read the data
+of the exercise (`data/...`): to run them again, copy the notebook into the exercise template
+folder, run it there, and copy it back.
 
 When you add an exercise, add a line to `index.html` and to the table above.
 

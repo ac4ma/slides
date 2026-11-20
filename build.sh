@@ -1,24 +1,22 @@
 #!/usr/bin/env bash
-# Rebuild the HTML slides from the notebooks of the exercise templates.
-# Usage: ./build.sh            (from the slides folder, with jupyter installed)
-# Expects the templates next to this folder: ../exercise-N-template/slides.ipynb
+# Rebuild the HTML slides from the notebooks: exercise-N/slides.ipynb -> exercise-N/index.html
+# Usage: ./build.sh            (with jupyter installed)
 set -euo pipefail
 cd "$(dirname "$0")"
 
-for notebook in ../exercise-*-template/slides.ipynb; do
-  name=$(basename "$(dirname "$notebook")" -template)      # exercise-2
-  title=$(python3 -c 'import json,sys; nb=json.load(open(sys.argv[1])); print(nb["metadata"].get("title", ""))' "$notebook")
-  mkdir -p "$name"
+for notebook in exercise-*/slides.ipynb; do
+  dir=$(dirname "$notebook")
   jupyter nbconvert --to slides --SlidesExporter.reveal_scroll=True \
-    --output-dir "$name" --output index "$notebook"
-  mv "$name/index.slides.html" "$name/index.html"
+    --output-dir "$dir" --output index "$notebook"
+  mv "$dir/index.slides.html" "$dir/index.html"
+  title=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["metadata"].get("title", ""))' "$notebook")
   if [ -n "$title" ]; then
-    python3 - "$name/index.html" "$title" <<'PY'
+    python3 - "$dir/index.html" "$title" <<'PY'
 import re, sys
 path, title = sys.argv[1], sys.argv[2]
 html = open(path, encoding="utf-8").read()
 open(path, "w", encoding="utf-8").write(re.sub(r"<title>.*?</title>", f"<title>{title}</title>", html, count=1))
 PY
   fi
-  echo "built $name/index.html"
+  echo "built $dir/index.html"
 done
